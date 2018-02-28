@@ -7,6 +7,8 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
+import org.demo.common.util.Constants;
+import org.demo.common.util.DemoUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,7 +32,6 @@ public class DemoDataApplication {
 	
 	private static final Logger LOG = Logger.getLogger(DemoDataApplication.class);
 	
-	public static final String HOSTNAME = "hostname";
 	@Value("${spring.datasource.url}")
 	private String dbUrl;
 	
@@ -66,17 +67,8 @@ public class DemoDataApplication {
 	}
 	
 	public static void main(final String[] args) throws Exception {
-	    System.setProperty(HOSTNAME, getHostname());
+	    System.setProperty(Constants.HOSTNAME, DemoUtil.getHostname());
         SpringApplication.run(DemoDataApplication.class, args);
     }
 	
-	public static String getHostname() {
-        String hostname = null;
-        try {
-            hostname = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-        	LOG.error("Cannot get host info", e);
-        }
-        return hostname;
-    }
 }

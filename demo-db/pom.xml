@@ -1,0 +1,229 @@
+<project xmlns="http://maven.apache.demo/POM/4.0.0" xmlns:xsi="http://www.w3.demo/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.demo/POM/4.0.0 http://maven.apache.demo/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>demo-db</artifactId>
+    <name>demo-db</name>
+    <description>demo Liquibase Change</description>
+    <groupId>demo</groupId>
+    <version>1.0.0</version>
+    
+    <properties>
+        <resources.dir>src/main/resources</resources.dir>
+        <build.output.dir>target</build.output.dir>
+        <db.dir>${resources.dir}/db</db.dir>
+        <db.build.output.dir>${build.output.dir}/db</db.build.output.dir>
+        <maven.build.timestamp.format>yyMMdd_HHmmss</maven.build.timestamp.format>
+        <buildNumber>${maven.build.timestamp}</buildNumber>
+        <default.schema.name>demo</default.schema.name>
+
+        <liquibase.password>${env.DEMO_PASSWORD}</liquibase.password>
+        <liquibase.global.contexts>1.0.0.RELEASE</liquibase.global.contexts>
+        <liquibase.release.features.contexts>DEMO</liquibase.release.features.contexts>
+        <db.migration.tag>1.0.0_MIGRATE</db.migration.tag>
+        <verbose>false</verbose>
+        <dropFirst>false</dropFirst>
+        <changeLogFileName>demo_changelog.xml</changeLogFileName>
+        <artifactory_repo_loc>[artifactory URL and port]</artifactory_repo_loc>
+    </properties>
+  
+    <profiles>
+       <profile>
+          <id>oracle</id>
+<!--  force profile activation by default - this variable may not ever be set in CI/CD -->
+   <activation>
+      <property>
+        <name>!env.EQRS_DB_PLATFORM</name>
+      </property>
+   </activation>
+          <properties>
+            <db.driver.name>oracle.jdbc.driver.OracleDriver</db.driver.name>
+            <!-- $db.changelog.schema.name can be left out if the same as the $default.schema.name -->
+            <db.changelog.schema.name>demo</db.changelog.schema.name>
+            <liquibase.username>${env.DEMO_USERNAME}[demo]</liquibase.username>
+
+          </properties>
+       </profile>
+
+       <profile>
+          <id>postgresql</id>
+          <properties>
+            <db.driver.name>demo.postgresql.Driver</db.driver.name>
+            <default.schema.name>demo</default.schema.name>
+            <db.changelog.schema.name>demo</db.changelog.schema.name>
+            <liquibase.username>${env.DEMO_USERNAME}</liquibase.username>
+           <local.liquibase.url>jdbc:postgresql://localhost:5432/postgres</local.liquibase.url>
+
+          </properties>
+       </profile>
+    
+        <!-- local  -->
+        <profile>
+            <id>local</id>
+            <properties>
+                <liquibase.url>${local.liquibase.url}</liquibase.url>
+                <liquibase.contexts>demo</liquibase.contexts>
+            </properties>
+        </profile>
+        
+        <!-- Sandbox  -->
+
+
+        <!-- IMPL  -->
+
+
+        <!-- TEST  -->
+
+
+        <!-- ITF -->
+
+
+        <!-- PROD -->
+
+
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.4</version>
+        </dependency> 
+<!--         an example of updating local repository with PostgreSQL jdbc4 driver for JRE7 if required -->
+<!-- mvn install:install-file -DgroupId=com.postgresql -DartifactId=jdbc4 -Dversion=42.1.1 -Dpackaging=jar -Dfile=C:\Users\ha7800\Downloads\PostgreSQL\postgresql-42.1.1.jre7.jar -DgeneratePom=true -->
+<!--         <dependency>
+            <groupId>com.postgresql</groupId>
+            <artifactId>jdbc4</artifactId>
+            <version>42.1.1</version>
+        </dependency>  -->      
+        <dependency>
+            <groupId>demo.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.1.1</version>
+        </dependency>     
+        <dependency>
+            <groupId>demo.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>demo.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <changeLogFile>change_log/${changeLogFileName}</changeLogFile>
+                    <driver>${db.driver.name}</driver>
+                    <changelogSchemaName>${db.changelog.schema.name}</changelogSchemaName>
+                    <defaultSchemaName>${default.schema.name}</defaultSchemaName>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+    
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>libs-release</name>
+            <url>${artifactory_repo_loc}/artifactory/libs-release</url>
+        </repository>
+        <repository>
+            <snapshots />
+            <id>snapshots</id>
+            <name>libs-snapshot</name>
+            <url>${artifactory_repo_loc}/artifactory/libs-snapshot</url>
+        </repository>
+        <repository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>http://repo.spring.io/libs-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/libs-milestone-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-releases</id>
+            <name>Spring Releases</name>
+            <url>http://repo.spring.io/libs-release-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven2-repo1.maven.demo</id>
+            <name>maven.demo Repository for Maven</name>
+            <url>http://repo1.maven.demo/maven2/</url>
+        </repository>
+        <repository>
+            <id>maven-central-repo</id>
+            <name>maven Central Repo</name>
+            <url>http://central.maven.demo/maven2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>plugins-release</name>
+            <url>${artifactory_repo_loc}/artifactory/plugins-release</url>
+        </pluginRepository>
+        <pluginRepository>
+            <snapshots />
+            <id>snapshots</id>
+            <name>plugins-snapshot</name>
+            <url>${artifactory_repo_loc}/artifactory/plugins-snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <name>Spring Snapshots</name>
+            <url>http://repo.spring.io/libs-snapshot-local</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>http://repo.spring.io/libs-milestone-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven2-repo1.maven.demo</id>
+            <name>maven.demo Repository for Maven</name>
+            <url>http://repo1.maven.demo/maven2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven-central-repo</id>
+            <name>maven Central Repo</name>
+            <url>http://central.maven.demo/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
