@@ -20,7 +20,7 @@ public class DemoController {
 	//@Authorization annotation?
 	@RequestMapping(method = RequestMethod.GET, produces = "application/json", value="/")
 	@CrossOrigin(origins = "")
-	public ResponseEntity<?> searchByCCNNPIDBAName(@RequestParam("id") Integer id,
+	public ResponseEntity<?> getDemoBeanById(@RequestParam("id") Integer id,
 			@RequestHeader(value = "Authorization") String accessToken) {
 		return demoManager.getDemoBeanById(id);
 	}

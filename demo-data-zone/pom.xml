@@ -17,14 +17,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-                <dependency>
-            <groupId>eqrs</groupId>
+    <dependency>
+            <groupId>demo</groupId>
             <artifactId>demo-common</artifactId>
             <version>${project.version}</version>
         </dependency>

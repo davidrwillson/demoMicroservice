@@ -5,6 +5,17 @@ import java.io.Serializable;
 public class DemoBean implements Serializable {
 	private Integer id;
 	private String name;
+	
+	public DemoBean() {
+		id = null;
+		name = null;
+	}
+	
+	public DemoBean(Integer id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
 	/**
 	 * @return the id
 	 */
